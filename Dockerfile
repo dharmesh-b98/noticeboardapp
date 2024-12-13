@@ -20,12 +20,12 @@ WORKDIR /app
 
 COPY --from=builder /src/target/noticeboard-0.0.1-SNAPSHOT.jar app.jar
 
-ENV SERVER_PORT=8080
+ENV PORT=8080
 ENV APPLICATION_HOST_URL=https://publishing-production-d35a.up.railway.app
 
-EXPOSE ${SERVER_PORT}
+EXPOSE ${PORT}
 
 HEALTHCHECK --interval=60s --start-period=120s \
-   CMD curl -s -f http://localhost:${SERVER_PORT}/status || exit 1
+   CMD curl -s -f http://localhost:${PORT}/status || exit 1
 
 ENTRYPOINT SERVER_PORT=${PORT} java -jar app.jar
