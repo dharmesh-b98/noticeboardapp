@@ -10,9 +10,10 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.json.JsonObject;
 import jakarta.validation.*;
 import vttp.batch5.ssf.noticeboard.models.Notice;
-import vttp.batch5.ssf.noticeboard.service.NoticeService;
+import vttp.batch5.ssf.noticeboard.services.NoticeService;
 
 // Use this class to write your request handlers
 
@@ -42,19 +43,22 @@ public class NoticeController {
         }
 
         String response =  noticeService.postToNoticeServer(notice, apiHostUrl);
-
-        if (response.contains("id")){
-            String successId = noticeService.getSuccessId(response);
+        JsonObject responseJson = noticeService.getJsonResponseFromNoticeServer(response);
+        
+        if (responseJson.containsKey("id")){
+            String successId = noticeService.getSuccessId(responseJson);
             model.addAttribute("successId", successId);
-
-            String jsonString = noticeService.convertNoticetoJson(notice);
+            
+            String jsonString = noticeService.convertNoticetoJson(notice).toString();
             noticeService.insertNotices(successId,jsonString);
+
             return "view2";
         }
 
-        else{
-            String failureMsg = noticeService.getFailureMsg(response);
+        else {
+            String failureMsg = noticeService.getFailureMsg(responseJson);
             model.addAttribute("failureMsg", failureMsg);
+
             return "view3";
         }
     }
